@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut"
+        android:shortcutId="sc1"
+        android:shortcutLongLabel="@string/shortcut_1_long"
+        android:shortcutShortLabel="@string/shortcut_1_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.ly.toolbox.ui.MainActivity"
+            android:targetPackage="com.ly.toolbox">
+            <extra
+                android:name="trigger"
+                android:value="shortcut_1" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut"
+        android:shortcutId="sc2"
+        android:shortcutLongLabel="@string/shortcut_2_long"
+        android:shortcutShortLabel="@string/shortcut_2_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.ly.toolbox.ui.MainActivity"
+            android:targetPackage="com.ly.toolbox">
+            <extra
+                android:name="trigger"
+                android:value="shortcut_2" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut"
+        android:shortcutId="sc3"
+        android:shortcutLongLabel="@string/shortcut_3_long"
+        android:shortcutShortLabel="@string/shortcut_3_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.ly.toolbox.ui.MainActivity"
+            android:targetPackage="com.ly.toolbox">
+            <extra
+                android:name="trigger"
+                android:value="shortcut_3" />
+        </intent>
+    </shortcut>
+
+</shortcuts>
+

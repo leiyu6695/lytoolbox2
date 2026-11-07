@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LY工具箱</string>
+    <string name="app_slogan">复制做不到的，一键替你做</string>
+
+    <string name="status_title">权限状态</string>
+    <string name="accessibility_name">无障碍服务</string>
+    <string name="overlay_name">悬浮窗权限</string>
+    <string name="state_on">已开启</string>
+    <string name="state_off">未开启</string>
+    <string name="grant">去开启</string>
+    <string name="settings">设置</string>
+
+    <string name="ball_title">悬浮球</string>
+    <string name="ball_subtitle">常驻屏幕的快捷入口，可拖动</string>
+
+    <string name="bindings_title">快捷键绑定</string>
+    <string name="binding_empty">还没有快捷键，点下面按钮新建</string>
+    <string name="add_binding">新建快捷键</string>
+
+    <string name="edit_title">编辑快捷键</string>
+    <string name="new_binding_title">新建快捷键</string>
+    <string name="name_hint">快捷键名称</string>
+    <string name="trigger_hint">触发方式</string>
+    <string name="steps_title">动作序列</string>
+    <string name="step_empty">还没有动作，至少添加一个</string>
+    <string name="add_step">添加动作</string>
+    <string name="choose_action">选择动作</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
+    <string name="back">返回</string>
+    <string name="confirm">确定</string>
+    <string name="saved">已保存</string>
+    <string name="deleted">已删除</string>
+    <string name="need_one_action">请至少添加一个动作</string>
+    <string name="need_name">请填写名称</string>
+
+    <string name="record">录制</string>
+    <string name="record_title">录制快捷键</string>
+    <string name="record_message">请按两次「音量 +」或「音量 −」，或同时按两个音量键。\n录制窗口内按键不会改变音量。</string>
+    <string name="record_success">已识别：%1$s</string>
+    <string name="record_fail">没有识别到组合键，请重试</string>
+
+    <string name="accessibility_label">LY工具箱 手势服务</string>
+    <string name="accessibility_desc">用于执行滑动、返回、桌面等动作。服务只在你触发快捷键时执行动作，不读取屏幕内容，不联网上传任何数据。</string>
+    <string name="accessibility_needed">请先在系统设置中开启「LY工具箱」的无障碍服务</string>
+    <string name="overlay_needed">请先授予悬浮窗权限</string>
+
+    <string name="ball_channel">悬浮球</string>
+    <string name="notif_title">LY工具箱悬浮球运行中</string>
+    <string name="notif_text">点击回到 LY工具箱</string>
+    <string name="notif_channel">常驻通知</string>
+
+    <string name="widget_desc">点一下执行默认快捷键</string>
+    <string name="widget_label">LY 快捷键</string>
+
+    <string name="shortcut_1_short">快捷键1</string>
+    <string name="shortcut_1_long">执行快捷键 1</string>
+    <string name="shortcut_2_short">快捷键2</string>
+    <string name="shortcut_2_long">执行快捷键 2</string>
+    <string name="shortcut_3_short">快捷键3</string>
+    <string name="shortcut_3_long">执行快捷键 3</string>
+
+    <string name="hint_trigger_conflict">同一触发方式只生效第一条绑定</string>
+    <string name="summary_empty">未设置动作</string>
+</resources>
