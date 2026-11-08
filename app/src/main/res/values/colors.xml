@@ -12,4 +12,8 @@
     <color name="success">#34D399</color>
     <color name="danger">#F87171</color>
     <color name="white">#FFFFFF</color>
+
+    <color name="accent_soft">#337C4DFF</color>
+    <color name="cyan_soft">#3322D3EE</color>
+    <color name="muted_soft">#14FFFFFF</color>
 </resources>

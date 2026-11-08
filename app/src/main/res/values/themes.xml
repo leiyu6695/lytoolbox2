@@ -36,6 +36,13 @@
         <item name="android:textColorHint">@color/text_dim</item>
     </style>
 
+    <style name="Widget.LY.ToolCard" parent="Widget.LY.Card">
+        <item name="cardCornerRadius">22dp</item>
+        <item name="cardBackgroundColor">@color/card</item>
+        <item name="strokeColor">@color/stroke</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
     <!--
       注意：样式名里带 "." 时，AAPT2 会把 "Text.Title" 的隐式父样式解析为 "Text"，
       没有该样式就会报 "resource style/Text not found"。

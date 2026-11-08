@@ -30,10 +30,16 @@ import com.ly.toolbox.data.ConfigStore
 import com.ly.toolbox.data.Trigger
 import com.ly.toolbox.ui.MainActivity
 import kotlin.math.abs
+import kotlin.math.hypot
 
 /**
- * 悬浮球常驻服务。使用 WindowManager 直接添加一个圆球，
- * 自己处理点击/双击/长按/四向滑动，并区分"拖动"。
+ * 悬浮球常驻服务。
+ *
+ * 手势冲突处理（重点）：
+ * - 手指按下后 180ms 内移动 → 判定为"滑动"，只触发绑定动作，不移动球；
+ * - 按住超过 180ms 再移动 → 判定为"拖动"，球跟随手指，松手保存位置；
+ * - 不动直接抬起 → 单击 / 双击；按住超过 480ms → 长按。
+ * 之前任何移动都会进入拖动，导致上/下滑动作永远触发不了。
  */
 class OverlayService : Service() {
 
@@ -44,12 +50,15 @@ class OverlayService : Service() {
     private val handler = Handler(Looper.getMainLooper())
     private var singleTapRunnable: Runnable? = null
     private var longPressRunnable: Runnable? = null
+    private var dragArmRunnable: Runnable? = null
 
     private var downRawX = 0f
     private var downRawY = 0f
     private var startX = 0
     private var startY = 0
     private var dragging = false
+    private var gestureMode = false
+    private var dragArmed = false
     private var longPressFired = false
     private var lastTapAt = 0L
 
@@ -63,6 +72,10 @@ class OverlayService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_REFRESH) {
+            applyAppearance()
+            return START_STICKY
+        }
         if (ballView == null) addBall()
         return START_STICKY
     }
@@ -97,7 +110,7 @@ class OverlayService : Service() {
                 setStroke(dp(2f), 0x55FFFFFF)
             }
             elevation = dp(6f).toFloat()
-            alpha = 0.94f
+            alpha = alphaOf(ConfigStore.ballAlpha())
         }
 
         params = WindowManager.LayoutParams(
@@ -127,6 +140,12 @@ class OverlayService : Service() {
         ballView = view
     }
 
+    private fun applyAppearance() {
+        ballView?.alpha = alphaOf(ConfigStore.ballAlpha())
+    }
+
+    private fun alphaOf(percent: Int): Float = percent.coerceIn(20, 100) / 100f
+
     private fun handleTouch(view: View, event: MotionEvent): Boolean {
         val slop = ViewConfiguration.get(this).scaledTouchSlop
         when (event.actionMasked) {
@@ -136,19 +155,30 @@ class OverlayService : Service() {
                 startX = params.x
                 startY = params.y
                 dragging = false
+                gestureMode = false
+                dragArmed = false
                 longPressFired = false
                 // 新一次按下先取消上一次尚未执行的单击，避免 300ms 边界重复触发
                 singleTapRunnable?.let { handler.removeCallbacks(it) }
                 scheduleLongPress()
+                scheduleDragArm()
                 return true
             }
 
             MotionEvent.ACTION_MOVE -> {
                 val dx = event.rawX - downRawX
                 val dy = event.rawY - downRawY
-                if (!dragging && (abs(dx) > slop || abs(dy) > slop)) {
-                    dragging = true
-                    cancelLongPress()
+                if (!dragging && !gestureMode && hypot(dx, dy) > slop) {
+                    if (dragArmed) {
+                        // 已按住足够久：开始拖动
+                        dragging = true
+                        cancelLongPress()
+                    } else {
+                        // 快速移动：判定为滑动动作，球保持不动
+                        gestureMode = true
+                        cancelLongPress()
+                        cancelDragArm(resetScale = true)
+                    }
                 }
                 if (dragging) {
                     params.x = startX + dx.toInt()
@@ -160,33 +190,37 @@ class OverlayService : Service() {
 
             MotionEvent.ACTION_UP -> {
                 cancelLongPress()
-                if (dragging) {
-                    ConfigStore.setBallPos(params.x, params.y)
-                } else if (longPressFired) {
-                    // 长按已执行过动作，抬手时不再触发单击
-                } else {
-                    val dx = event.rawX - downRawX
-                    val dy = event.rawY - downRawY
-                    val threshold = dp(36f).toFloat()
-                    if (abs(dx) > threshold || abs(dy) > threshold) {
-                        if (abs(dx) > abs(dy)) {
-                            fire(if (dx > 0) Trigger.BALL_SWIPE_RIGHT else Trigger.BALL_SWIPE_LEFT)
-                        } else {
-                            fire(if (dy > 0) Trigger.BALL_SWIPE_DOWN else Trigger.BALL_SWIPE_UP)
-                        }
-                    } else {
-                        onTap()
-                    }
+                cancelDragArm(resetScale = true)
+                when {
+                    dragging -> ConfigStore.setBallPos(params.x, params.y)
+                    longPressFired -> Unit // 长按动作已执行，抬手不再触发
+                    gestureMode -> handleSwipe(
+                        event.rawX - downRawX,
+                        event.rawY - downRawY
+                    )
+
+                    else -> onTap()
                 }
                 return true
             }
 
             MotionEvent.ACTION_CANCEL -> {
                 cancelLongPress()
+                cancelDragArm(resetScale = true)
                 return true
             }
         }
         return false
+    }
+
+    private fun handleSwipe(dx: Float, dy: Float) {
+        val threshold = dp(36f).toFloat()
+        if (abs(dx) < threshold && abs(dy) < threshold) return
+        if (abs(dx) > abs(dy)) {
+            fire(if (dx > 0) Trigger.BALL_SWIPE_RIGHT else Trigger.BALL_SWIPE_LEFT)
+        } else {
+            fire(if (dy > 0) Trigger.BALL_SWIPE_DOWN else Trigger.BALL_SWIPE_UP)
+        }
     }
 
     private fun onTap() {
@@ -209,12 +243,30 @@ class OverlayService : Service() {
             fire(Trigger.BALL_LONG_PRESS)
         }
         longPressRunnable = runnable
-        handler.postDelayed(runnable, 480L)
+        handler.postDelayed(runnable, LONG_PRESS_DELAY)
     }
 
     private fun cancelLongPress() {
         longPressRunnable?.let { handler.removeCallbacks(it) }
         longPressRunnable = null
+    }
+
+    private fun scheduleDragArm() {
+        val runnable = Runnable {
+            dragArmed = true
+            ballView?.animate()?.scaleX(1.12f)?.scaleY(1.12f)?.setDuration(120L)?.start()
+        }
+        dragArmRunnable = runnable
+        handler.postDelayed(runnable, DRAG_ARM_DELAY)
+    }
+
+    private fun cancelDragArm(resetScale: Boolean) {
+        dragArmRunnable?.let { handler.removeCallbacks(it) }
+        dragArmRunnable = null
+        dragArmed = false
+        if (resetScale) {
+            ballView?.animate()?.scaleX(1f)?.scaleY(1f)?.setDuration(120L)?.start()
+        }
     }
 
     private fun fire(trigger: Trigger) {
@@ -258,6 +310,9 @@ class OverlayService : Service() {
 
     companion object {
         private const val NOTIFICATION_ID = 1001
+        private const val DRAG_ARM_DELAY = 180L
+        private const val LONG_PRESS_DELAY = 480L
+        private const val ACTION_REFRESH = "com.ly.toolbox.REFRESH_OVERLAY"
 
         @Volatile
         var isRunning = false
@@ -274,6 +329,16 @@ class OverlayService : Service() {
 
         fun stop(context: Context) {
             context.stopService(Intent(context, OverlayService::class.java))
+        }
+
+        /** 透明度等外观变化后，通知运行中的悬浮球立即刷新（球未开启时忽略）。 */
+        fun refresh(context: Context) {
+            if (!isRunning) return
+            runCatching {
+                context.startService(
+                    Intent(context, OverlayService::class.java).setAction(ACTION_REFRESH)
+                )
+            }
         }
     }
 }

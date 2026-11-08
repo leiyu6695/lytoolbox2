@@ -16,6 +16,7 @@ object ConfigStore {
     private const val KEY_BALL_ENABLED = "ball_enabled"
     private const val KEY_BALL_X = "ball_x"
     private const val KEY_BALL_Y = "ball_y"
+    private const val KEY_BALL_ALPHA = "ball_alpha"
 
     private lateinit var prefs: SharedPreferences
     private val gson = Gson()
@@ -55,6 +56,13 @@ object ConfigStore {
 
     fun setBallPos(x: Int, y: Int) {
         prefs.edit().putInt(KEY_BALL_X, x).putInt(KEY_BALL_Y, y).apply()
+    }
+
+    /** 悬浮球不透明度，取值 20–100（百分比），默认 90。 */
+    fun ballAlpha(): Int = prefs.getInt(KEY_BALL_ALPHA, 90).coerceIn(20, 100)
+
+    fun setBallAlpha(percent: Int) {
+        prefs.edit().putInt(KEY_BALL_ALPHA, percent.coerceIn(20, 100)).apply()
     }
 
     /** 首次使用时给出的默认绑定，让 App 装上就能用。 */

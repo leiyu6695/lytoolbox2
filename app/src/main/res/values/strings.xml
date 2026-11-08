@@ -3,6 +3,20 @@
     <string name="app_name">LY工具箱</string>
     <string name="app_slogan">复制做不到的，一键替你做</string>
 
+    <string name="grid_subtitle">选择一个工具开始</string>
+    <string name="tool_overlay">悬浮窗</string>
+    <string name="tool_overlay_desc">权限与快捷键</string>
+    <string name="tool_skip_ad">广告跳过</string>
+    <string name="tool_skip_ad_desc">自动跳过开屏广告</string>
+    <string name="tool_slot">待添加</string>
+    <string name="tool_slot_desc">敬请期待</string>
+    <string name="more_coming">更多功能开发中...</string>
+    <string name="placeholder_toast">该功能还在开发中</string>
+
+    <string name="settings_title">设置</string>
+    <string name="alpha_title">悬浮球透明度</string>
+    <string name="alpha_value">%1$d%%</string>
+
     <string name="status_title">权限状态</string>
     <string name="accessibility_name">无障碍服务</string>
     <string name="overlay_name">悬浮窗权限</string>
@@ -12,7 +26,7 @@
     <string name="settings">设置</string>
 
     <string name="ball_title">悬浮球</string>
-    <string name="ball_subtitle">常驻屏幕的快捷入口，可拖动</string>
+    <string name="ball_subtitle">快速滑动触发动作；按住约 0.2 秒再拖动可移动位置</string>
 
     <string name="bindings_title">快捷键绑定</string>
     <string name="binding_empty">还没有快捷键，点下面按钮新建</string>
