@@ -39,6 +39,10 @@
         </activity>
 
         <activity
+            android:name=".ui.AdSkipActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.SettingsActivity"
             android:exported="false" />
 

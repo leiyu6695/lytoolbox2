@@ -24,7 +24,9 @@ class MainActivity : AppCompatActivity() {
         binding.cardOverlay.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
-        binding.cardSkipAd.setOnClickListener { showPlaceholder() }
+        binding.cardSkipAd.setOnClickListener {
+            startActivity(Intent(this, AdSkipActivity::class.java))
+        }
         binding.cardSlot1.setOnClickListener { showPlaceholder() }
         binding.cardSlot2.setOnClickListener { showPlaceholder() }
 

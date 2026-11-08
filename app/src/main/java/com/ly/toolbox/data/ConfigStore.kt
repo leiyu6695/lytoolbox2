@@ -17,9 +17,16 @@ object ConfigStore {
     private const val KEY_BALL_X = "ball_x"
     private const val KEY_BALL_Y = "ball_y"
     private const val KEY_BALL_ALPHA = "ball_alpha"
+    private const val KEY_AD_SKIP_ENABLED = "ad_skip_enabled"
+    private const val KEY_AD_SKIP_PACKAGES = "ad_skip_packages"
+    private const val KEY_AD_SKIP_COUNT = "ad_skip_count"
 
     private lateinit var prefs: SharedPreferences
     private val gson = Gson()
+
+    /** 广告白名单缓存：无障碍事件很频繁，避免每次都解析 JSON。 */
+    @Volatile
+    private var cachedAdSkipPackages: Set<String>? = null
 
     fun init(context: Context) {
         if (!::prefs.isInitialized) {
@@ -63,6 +70,49 @@ object ConfigStore {
 
     fun setBallAlpha(percent: Int) {
         prefs.edit().putInt(KEY_BALL_ALPHA, percent.coerceIn(20, 100)).apply()
+    }
+
+    // ---------- 广告跳过 ----------
+
+    fun adSkipEnabled(): Boolean = prefs.getBoolean(KEY_AD_SKIP_ENABLED, false)
+
+    fun setAdSkipEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_AD_SKIP_ENABLED, enabled).apply()
+    }
+
+    /** 生效应用白名单；空集合表示所有应用。 */
+    fun adSkipPackages(): Set<String> {
+        cachedAdSkipPackages?.let { return it }
+        val json = prefs.getString(KEY_AD_SKIP_PACKAGES, null) ?: return emptySet()
+        val parsed = runCatching {
+            val type = object : TypeToken<MutableSet<String>>() {}.type
+            gson.fromJson<MutableSet<String>>(json, type) ?: emptySet()
+        }.getOrElse { emptySet() }
+        cachedAdSkipPackages = parsed
+        return parsed
+    }
+
+    fun setAdSkipPackages(packages: Set<String>) {
+        cachedAdSkipPackages = packages
+        prefs.edit().putString(KEY_AD_SKIP_PACKAGES, gson.toJson(packages)).apply()
+    }
+
+    fun isAdSkipTarget(pkg: String): Boolean {
+        if (pkg == "com.android.systemui") return false
+        val targets = adSkipPackages()
+        return targets.isEmpty() || targets.contains(pkg)
+    }
+
+    fun adSkipCount(): Int = prefs.getInt(KEY_AD_SKIP_COUNT, 0)
+
+    fun bumpAdSkipCount(): Int {
+        val next = adSkipCount() + 1
+        prefs.edit().putInt(KEY_AD_SKIP_COUNT, next).apply()
+        return next
+    }
+
+    fun resetAdSkipCount() {
+        prefs.edit().putInt(KEY_AD_SKIP_COUNT, 0).apply()
     }
 
     /** 首次使用时给出的默认绑定，让 App 装上就能用。 */

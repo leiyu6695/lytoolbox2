@@ -17,6 +17,21 @@
     <string name="alpha_title">悬浮球透明度</string>
     <string name="alpha_value">%1$d%%</string>
 
+    <string name="adskip_title">广告跳过</string>
+    <string name="adskip_enable">自动跳过开屏广告</string>
+    <string name="adskip_enable_desc">识别到「跳过 / 跳过广告 / Skip」按钮时自动点击</string>
+    <string name="adskip_count_label">已跳过</string>
+    <string name="adskip_count_unit">次</string>
+    <string name="adskip_reset">重置</string>
+    <string name="adskip_scope">生效应用</string>
+    <string name="adskip_scope_all">所有应用</string>
+    <string name="adskip_scope_selected">已选 %1$d 个应用</string>
+    <string name="adskip_pick">选择应用</string>
+    <string name="adskip_pick_title">选择生效应用（不选 = 所有应用）</string>
+    <string name="adskip_hint_ready">无障碍服务已开启，正在后台监听</string>
+    <string name="adskip_hint_off">需要先开启无障碍服务才能生效</string>
+    <string name="adskip_tips">说明：仅在打开应用后的 12 秒内尝试；只识别「跳过 / 跳过广告 / Skip」这类按钮文字；部分应用的广告由原生渲染、读不到按钮文字，可能跳过失败。</string>
+
     <string name="status_title">权限状态</string>
     <string name="accessibility_name">无障碍服务</string>
     <string name="overlay_name">悬浮窗权限</string>
