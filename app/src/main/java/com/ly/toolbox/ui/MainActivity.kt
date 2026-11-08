@@ -47,7 +47,8 @@ class MainActivity : AppCompatActivity() {
      * 不打断用户当前正在使用的 App。
      */
     private fun handleTriggerIntent(intent: Intent?) {
-        val triggerId = intent?.getStringExtra(EXTRA_TRIGGER) ?: return
+        if (intent == null) return
+        val triggerId = intent.getStringExtra(EXTRA_TRIGGER) ?: return
         ActionRunner.run(this, Trigger.fromId(triggerId))
         if (intent.action == Intent.ACTION_VIEW) finish()
     }

@@ -141,14 +141,15 @@ class LyAccessibilityService : AccessibilityService() {
         var cursor: AccessibilityNodeInfo? = node
         var depth = 0
         while (cursor != null && depth < 6) {
-            if (cursor.isClickable && cursor.isEnabled) {
+            val current = cursor // 固定为 val，避免在 lambda 中捕获可变的 cursor 导致智能转换失效
+            if (current.isClickable && current.isEnabled) {
                 val clicked = runCatching {
-                    cursor.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                    current.performAction(AccessibilityNodeInfo.ACTION_CLICK)
                 }.getOrDefault(false)
                 if (clicked) return true
                 break
             }
-            cursor = cursor.parent
+            cursor = current.parent
             depth++
         }
 

@@ -116,12 +116,7 @@ class OverlayService : Service() {
         params = WindowManager.LayoutParams(
             size,
             size,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            } else {
-                @Suppress("DEPRECATION")
-                WindowManager.LayoutParams.TYPE_PHONE
-            },
+            windowType(),
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
@@ -274,6 +269,15 @@ class OverlayService : Service() {
         ActionRunner.run(this, trigger)
     }
 
+    @Suppress("DEPRECATION")
+    private fun windowType(): Int =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+
+    @Suppress("DEPRECATION")
     private fun haptic() {
         runCatching {
             val vibrator = getSystemService(Vibrator::class.java)
@@ -282,7 +286,6 @@ class OverlayService : Service() {
                     VibrationEffect.createOneShot(18L, VibrationEffect.DEFAULT_AMPLITUDE)
                 )
             } else {
-                @Suppress("DEPRECATION")
                 vibrator?.vibrate(18L)
             }
         }

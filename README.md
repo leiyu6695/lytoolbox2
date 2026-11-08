@@ -68,7 +68,8 @@ lytoolbox/
 
 1. 新建一个 GitHub 仓库，把 `lytoolbox/` 里的全部文件推上去；
 2. 打开仓库 **Actions → Build APK → Run workflow**；
-3. 构建完成后在 Artifacts 里下载 `LYToolbox-debug-apk`，解压得到 `app-debug.apk`。
+3. 构建完成后在 Artifacts 里下载 `LYToolbox-debug-apk`，解压得到 `app-debug.apk`；
+4. 如果构建失败，先下载同一次运行里的 **`build-log`** 制品，里面有完整的 Gradle 报错。
 
 工作流位于 `.github/workflows/build-apk.yml`，会自动安装 JDK 17、Android SDK 和 Gradle 8.2。
 
